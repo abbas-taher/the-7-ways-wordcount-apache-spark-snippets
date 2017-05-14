@@ -2,8 +2,23 @@
 ### Understanding the RDDs, Dataframes, Datasets & Spark SQL by Example
 
 In this post, I would like to share a few code snippets that can help understand Spark 2.0 API. I am using the Spark Shell. But these code snippets can also be compiled on Scala IDE for Eclipse and executed on Hortonworks 2.5 as described in a previous article or Cloudera CDH sandboxes.
-For illustration purposes, I am using the text file that contains the Humpty Dumpty rhyme. I am also printing the result on the console so that it becomes more fun to examine the output - rather than saving it into a file. In all examples I am reading the file, counting the words in each file while filtering out all other words except for Humpty and Dumpty.
-Each of the snippets illustrates specific Spark construct(s). The examples highlight API functionaliy related to RDDs, Dataframes, Datasets or Spark SQL. 
+
+For illustration purposes, I am using a [text file](https://github.com/abbas-taher/the-7-ways-wordcount-apache-spark-snippets/edit/master/humpty.txt) that contains the 4 lines of the Humpty Dumpty rhyme. 
+
+    Humpty Dumpty sat on a wall,
+    Humpty Dumpty had a great fall.
+    All the king's horses and all the king's men
+    Couldn't put Humpty together again.
+
+In all examples I am reading the file, separating the words in each line, then filtering out all other words except for the two words Humpty & Dumpty, then performing the count. All of examples print the result at the end on the console rather than saving it into a file on hdfs. The result of the 7 examples is Dumpty occuring 2 times and Humpty 3 times:
+
+    [Dumpty,2]
+    [Humpty,3] 
+
+
+Each of the snippets illustrates specific Spark construct(s). They also highlight different API functionaliy related to either RDDs, Dataframes, Datasets or Spark SQL. 
+
+So lets start
 
 ## Example 1: Classic Word Count using filter & reduceByKey on RDD
      val dfsFilename = "/input/humpty.txt"
@@ -27,17 +42,18 @@ In this example each line in the file is read as an entire string into an RDD. T
 This example is similar to the first example. They only differ in the usage of groupBy command which generates a key/value pair that contains the word as a key and the sequence of the same word as a value. Then a new key/value pair is produced that uses the sequence size as a count of the occurrence of the word.  It is important to note that the filter predicate is applied on each words and only the words that satisfy the condition are passed to groupBy operation.
 
 
-## Example 3: Word Count Using Dataframe. Row and groupBy
+## Example 3: Word Count Using Dataframes, Rows and groupBy
      val dfsFilename = "/input/humpty.txt"
      val readFileDF = spark.sparkContext.textFile(dfsFilename)
      val wordsDF = readFileDF.flatMap(_.split(" ")).toDF
      val wcounts3 = wordsDF.filter(r => (r(0) =="Humpty") || (r(0) == "Dumpty")).groupBy("Value").count()
-
      wcounts3.collect.foreach(println)
 
 This example is totally different from the first two examples. Here we use Dataframes instead of RDD to work with the text as indicated with the “toDF” command. The returned Dataframe is made of a sequence of Rows. Because of the split operation, each row is made of one element only that can be accessed by the “0” index value. Also, simliar to 2nd example we are using the gourpBy operation followed by count to perform the word count.
+
 The filter and groupBy operation above can also be written as follows:
-     val wcounts3 = wordsDF.filter(r => (r.get(0) =="Humpty") || (r.get(0) == "Dumpty")).groupBy("Value").count()
+
+      val wcounts3 = wordsDF.filter(r => (r.get(0) =="Humpty") || (r.get(0) == "Dumpty")).groupBy("Value").count()
 Here the first element in the array within the row is accessed via “r.get(0)”.
 
 ## Example 4: Word Count Using Dataset 
@@ -45,11 +61,10 @@ Here the first element in the array within the row is accessed via “r.get(0)�
 
      val dfsFilename = "/input/humpty.txt"
      val readFileDS = spark.read.textFile(dfsFilename)
-    
      val wcounts4 = readFileDS.flatMap(_.split(" "))
                               .filter(w => (w =="Humpty") || (w == "Dumpty"))
                               .groupBy("Value").count()
-     wcounts4.collect.foreach(println)
+     wcounts4.show()
 Here we use Datasets instead of Dataframes to read the text file then we apply a filter and groupBy operation followed by count to perform the word count. This is the simplest and easiest to understand of all the examples in this article.
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
@@ -62,7 +77,7 @@ Here we use Datasets instead of Dataframes to read the text file then we apply a
     
     val wcounts5 = spark.sql("SELECT Value, COUNT(Value) FROM WORDS WHERE Value ='Humpty' OR Value ='Dumpty' GROUP BY Value")
 
-    wcounts5.collect.foreach(println)
+    wcounts5.show
 
 Here we create a Temporary View that we query using a Spark Select SQL statement.
   
