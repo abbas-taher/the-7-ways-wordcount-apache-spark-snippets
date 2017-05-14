@@ -90,8 +90,9 @@ Here we create a Temporary View that we query using a Spark Select SQL statement
     
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
     val CWordsDS = readFileDS.as[CWord]
-    
-    val wcounts6 = CWordsDS.where("Value = 'Humpty' OR Value = 'Dumpty'").groupBy("Value").count()
+    val wcounts6 = CWordsDS.where("Value = 'Humpty' OR Value = 'Dumpty'")
+                           .groupBy("Value")
+                           .count()
     wcounts6.collect.foreach(println)
    
 In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of using a filter on all the elements of the Dataset we use the “where” command and pass a predicate condition using the column name “Value”.
@@ -103,8 +104,9 @@ In this example we utilize the power of Datasets by providing the schema as a ca
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
     val CWordsDS = readFileDS.as[CWord]
     
-    val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty")).groupBy($"Value").agg(count($"Value"))
-    
+    val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty"))
+                           .groupBy($"Value")
+                           .agg(count($"Value"))
     wcounts7.collect.foreach(println)
 
 In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of a filter we use the “where” command and pass a predicate indicating using the column name via a $ variable. We also use the agg command which is the generalized command for all aggregate functions.
