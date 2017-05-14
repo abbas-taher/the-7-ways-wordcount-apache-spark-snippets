@@ -69,7 +69,7 @@ Here the first element in the array within the row is accessed via â€œr.get(0)â€
                               .count()
      wcounts4.show()
 
-Here we use Datasets instead of Dataframes to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive.
+Here we use Datasets instead of Dataframes to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple - when you define a Dataset with one column the Spark Framework assigns the name "Value" by default if it was not defined by the programmer. 
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
     import spark.implicits._  
