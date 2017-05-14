@@ -1,7 +1,7 @@
 ## The 7 Ways to Code WordCount in Spark 2.0 
 ### Understanding the RDDs, Dataframes, Datasets & Spark SQL by Example
 
-In this post, I would like to share a few code snippets that can help understand Spark 2.0 API. I am using the Spark Shell. But these code snippets can also be compiled on Scala IDE for Eclipse and executed on Hortonworks 2.5 as described in a previous article or Cloudera CDH sandboxes.
+In this post, I would like to share a few code snippets that can help understand Spark 2.0 API. I am using the Spark Shell to execute the code, but you can also compile the code on Scala IDE for Eclipse and execut it on Hortonworks 2.5 as described in a previous article or Cloudera CDH sandboxes.
 
 For illustration purposes, I am using a [text file](https://github.com/abbas-taher/the-7-ways-wordcount-apache-spark-snippets/edit/master/humpty.txt) that contains the 4 lines of the Humpty Dumpty rhyme. 
 
@@ -10,15 +10,14 @@ For illustration purposes, I am using a [text file](https://github.com/abbas-tah
     All the king's horses and all the king's men
     Couldn't put Humpty together again.
 
-In all examples I am reading the file, separating the words in each line, then filtering out all other words except for the two words Humpty & Dumpty, then performing the count. All of examples print the result at the end on the console rather than saving it into a file on hdfs. The result of the 7 examples is Dumpty occuring 2 times and Humpty 3 times:
+All examples start by reading the file, separating the words in each line, filtering out all other words except for the two words Humpty & Dumpty, then last performing the count. In each snippet the result is printed at the end on the console rather than saving it into a file on hdfs. The result of the 7 examples is always Dumpty occuring 2 times and Humpty 3 times:
 
     [Dumpty,2]
     [Humpty,3] 
 
+Each of the snippets illustrates a specific Spark construct or API functionaliy related to either RDDs, Dataframes, Datasets or Spark SQL. 
 
-Each of the snippets illustrates specific Spark construct(s). They also highlight different API functionaliy related to either RDDs, Dataframes, Datasets or Spark SQL. 
-
-So lets start
+So lets start ...
 
 ## Example 1: Classic Word Count using filter & reduceByKey on RDD
      val dfsFilename = "/input/humpty.txt"
@@ -39,6 +38,7 @@ In this example each line in the file is read as an entire string into an RDD. T
                                .groupBy(_.toString)
                                .map(ws => (ws._1,ws._2.size))
      wcounts2.collect.foreach(println)
+
 This example is similar to the first example. They only differ in the usage of groupBy command which generates a key/value pair that contains the word as a key and the sequence of the same word as a value. Then a new key/value pair is produced that uses the sequence size as a count of the occurrence of the word.  It is important to note that the filter predicate is applied on each words and only the words that satisfy the condition are passed to groupBy operation.
 
 
@@ -65,6 +65,7 @@ Here the first element in the array within the row is accessed via “r.get(0)�
                               .filter(w => (w =="Humpty") || (w == "Dumpty"))
                               .groupBy("Value").count()
      wcounts4.show()
+
 Here we use Datasets instead of Dataframes to read the text file then we apply a filter and groupBy operation followed by count to perform the word count. This is the simplest and easiest to understand of all the examples in this article.
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
@@ -82,7 +83,6 @@ Here we use Datasets instead of Dataframes to read the text file then we apply a
 Here we create a Temporary View that we query using a Spark Select SQL statement.
   
 ## Example 6: Word Count Using Case Class, Dataset and where command
-
     case class CWord (Value: String)
     import spark.implicits._  
     
@@ -94,7 +94,7 @@ Here we create a Temporary View that we query using a Spark Select SQL statement
    
 In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of using a filter on all the elements of the Dataset we use the “where” command and pass a predicate condition using the column name “Value”.
 
-    ## Example 7: Word Count Using Case Class, Dataset, where and agg commands and $column-name
+## Example 7: Word Count Using Case Class, Dataset, where and agg commands and $column-name
     case class CWord (Value: String)
     import spark.implicits._  
     
@@ -106,4 +106,3 @@ In this example we utilize the power of Datasets by providing the schema as a ca
     wcounts7.collect.foreach(println)
 
 In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of a filter we use the “where” command and pass a predicate indicating using the column name via a $ variable. We also use the agg command which is the generalized command for all aggregate functions.
-
