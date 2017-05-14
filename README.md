@@ -77,9 +77,7 @@ Here we use Datasets instead of Dataframes to read the text file then we apply a
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename)
     val wordsDS = readFileDS.flatMap(_.split(" ")).as[String]
     wordsDS.createOrReplaceTempView("WORDS")    
-    
     val wcounts5 = spark.sql("SELECT Value, COUNT(Value) FROM WORDS WHERE Value ='Humpty' OR Value ='Dumpty' GROUP BY Value")
-
     wcounts5.show
 
 Here we create a Temporary View that we query using a Spark Select SQL statement.
@@ -103,7 +101,6 @@ In this example we utilize the power of Datasets by providing the schema as a ca
     
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
     val CWordsDS = readFileDS.as[CWord]
-    
     val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty"))
                            .groupBy($"Value")
                            .agg(count($"Value"))
