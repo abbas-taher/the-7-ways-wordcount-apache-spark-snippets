@@ -1,5 +1,5 @@
 ## The 7 Ways to Code WordCount in Spark 2.0 
-### Understanding the RDDs, Dataframes, Datasets & Spark SQL by Example
+### Understanding the RDDs, DataFrames, Datasets & Spark SQL by Example
 
 In this post, I would like to share a few code snippets that can help understand Spark 2.0 API. I am using the Spark Shell to execute the code, but you can also compile the code on Scala IDE for Eclipse and execute it on Hortonworks 2.5 as described in a previous article or Cloudera CDH sandboxes.
 
@@ -15,7 +15,7 @@ All examples start by reading the file, separating the words in each line, filte
     [Dumpty,2]
     [Humpty,3] 
 
-Each of the snippets illustrates a specific Spark construct or API functionality related to either RDDs, Dataframes, Datasets or Spark SQL. 
+Each of the snippets illustrates a specific Spark construct or API functionality related to either RDDs, DataFrames, Datasets or Spark SQL. 
 
 So lets start ...
 
@@ -51,7 +51,7 @@ This example is similar to the first example. They only differ in the usage of g
                            .count()
      wcounts3.collect.foreach(println)
 
-This example is totally different from the first two examples. Here we use Dataframes instead of RDD to work with the text as indicated with the “toDF” command. The returned Dataframe is made of a sequence of Rows. Because of the split operation, each row is made of one element that can be accessed by the index=0. Also, similiar to 2nd example we are using the gourpBy operation followed by count to perform the word count.
+This example is totally different from the first two examples. Here we use Dataframes instead of RDD to work with the text as indicated with the “toDF” command. The returned DataFrame is made of a sequence of Rows. Because of the split operation, each row is made of one element that can be accessed by the index=0. Also, similiar to 2nd example we are using the gourpBy operation followed by count to perform the word count.
 
 The filter and groupBy operation above can also be written as follows:
 
@@ -69,7 +69,7 @@ Here the first element in the array within the row is accessed via “r.get(0)�
                               .count()
      wcounts4.show()
 
-Here we use Datasets instead of Dataframes to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple - when you define a Dataset with one column the Spark Framework assigns the name "Value" by default if it was not defined by the programmer. 
+Here we use Datasets instead of DataFrames to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple - when you define a Dataset with one column the Spark Framework assigns the name "Value" by default if it was not defined by the programmer. 
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
     import spark.implicits._  
