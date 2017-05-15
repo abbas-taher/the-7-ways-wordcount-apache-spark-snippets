@@ -17,7 +17,7 @@ All examples start by reading the file, then separating the words in each line, 
 
 Each of the snippets illustrates a specific Spark construct or API functionality related to either RDDs, DataFrames, Datasets or Spark SQL. 
 
-So lets start ...
+So let's start ...
 
 ## Example 1: Classic Word Count using filter & reduceByKey on RDD
      val dfsFilename = "/input/humpty.txt"
