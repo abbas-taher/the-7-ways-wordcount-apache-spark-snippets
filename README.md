@@ -10,7 +10,7 @@ For illustration purposes, I am using a [text file](https://github.com/abbas-tah
     All the king's horses and all the king's men
     Couldn't put Humpty together again.
 
-All examples start by reading the file, separating the words in each line, filtering out all other words except for the two words Humpty & Dumpty, then last performing the count. In each snippet the result is printed at the end on the console rather than saving it into a file on hdfs. The result of the 7 examples is always Dumpty occurring 2 times and Humpty 3 times:
+All examples start by reading the file, then separating the words in each line, filtering out all other words except for the two words Humpty & Dumpty, and last performing the count. In each snippet the result is printed on the console rather than saving it into an hdfs file. The result of the 7 examples is always Dumpty occurring 2 times and Humpty 3 times:
 
     [Dumpty,2]
     [Humpty,3] 
@@ -39,7 +39,7 @@ In this example each line in the file is read as an entire string into an RDD. T
                                .map(ws => (ws._1,ws._2.size))
      wcounts2.collect.foreach(println)
 
-This example is similar to the first example. They only differ in the usage of groupBy command which generates a key/value pair that contains the word as a key and the sequence of the same word as a value. Then a new key/value pair is produced that uses the sequence size as a count of the occurrence of the word.  It is important to note that the filter predicate is applied on each word and only the words that satisfy the condition are passed to groupBy operation.
+This example is similar to the first example. The two only differ in the usage of groupBy operation which generates a key/value pair that contains the word as a key and a sequence of the same word repeated as a value. Then a new key/value pair is produced that uses the sequence size as a count of the occurrence of the word.  It is important to note that the filter function (predicate) is applied on each word and only the words that satisfy the condition are passed to the groupBy operation.
 
 
 ## Example 3: Word Count Using Dataframes, Rows and groupBy
@@ -51,12 +51,14 @@ This example is similar to the first example. They only differ in the usage of g
                            .count()
      wcounts3.collect.foreach(println)
 
-This example is totally different from the first two examples. Here we use Dataframes instead of RDD to work with the text as indicated with the “toDF” command. The returned DataFrame is made of a sequence of Rows. Because of the split operation, each row is made of one element that can be accessed by the index=0. Also, similiar to 2nd example we are using the gourpBy operation followed by count to perform the word count.
+This example is totally different from the first two examples. Here we use DataFrames instead of RDD to work with the text as indicated with the “toDF” command. The returned DataFrame is made of a sequence of Rows. Because of the split operation, each row is made of one element that can be accessed by the index=0. Also, similiar to 2nd example we are using the gourpBy operation which is followed by count to perform the word count. The count command gives DataFrames their edge over RDDs.
 
-The filter and groupBy operation above can also be written as follows:
+If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple: when you define a Dataset with one column the Spark Framework assigns the column a name called "Value" by default if it was not defined by the programmer. 
+
+The filter and groupBy operation above can also be written as below. Here the first element in the array within the row is accessed via “r.get(0)”.
 
       val wcounts3 = wordsDF.filter(r => (r.get(0) =="Humpty") || (r.get(0) == "Dumpty")).groupBy("Value").count()
-Here the first element in the array within the row is accessed via “r.get(0)”.
+
 
 ## Example 4: Word Count Using Dataset 
      import spark.implicits._   
@@ -69,7 +71,7 @@ Here the first element in the array within the row is accessed via “r.get(0)�
                               .count()
      wcounts4.show()
 
-Here we use Datasets instead of DataFrames to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple - when you define a Dataset with one column the Spark Framework assigns the name "Value" by default if it was not defined by the programmer. 
+Here we use Datasets instead of DataFrames to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. It blends well with the Scala paradigm.
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
     import spark.implicits._  
