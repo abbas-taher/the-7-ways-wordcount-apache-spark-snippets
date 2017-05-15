@@ -55,9 +55,11 @@ This example is similar to the first example. The two only differ in the usage o
 
 This example is totally different from the first two examples. Here we use DataFrames instead of RDD to work with the text as indicated with the “toDF” command. The returned DataFrame is made of a sequence of Rows, for in Spark 2.0, DataFrames are just Dataset of Rows in Scala. Because of the split operation, each row is made of one element. The columns of a row in the result can be accessed by field index=0 in our case because we only have one column. Also, similiar to 2nd example we are using the gourpBy operation which is followed by count to perform the word count. The count command gives DataFrames their edge over RDDs.
 
-If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple; when you define a Dataset with one column the Spark Framework on run-time generates a column named "Value" by default if the programmer does not define one. The filter and groupBy operation above can also be written in another way. Here the first element in the array within the row is accessed via “r.getString(0)”.
+If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple; when you define a Dataset/DataFrame with one column the Spark Framework on run-time generates a column named "Value" by default if the programmer does not define one. The filter operation above can also be written in another way and the first element in the array within the row can be accessed via “r.getString(0)”.
 
-      val wcounts3 = wordsDF.filter(r => (r.getString(0) =="Humpty") || (r.getString(0) == "Dumpty")).groupBy("Value").count()
+      val wcounts3 = wordsDF.filter(r => (r.getString(0) =="Humpty") || (r.getString(0) == "Dumpty"))
+                            .groupBy("Value")
+                            .count()
 
 
 ## Example 4: Word Count Using Dataset 
