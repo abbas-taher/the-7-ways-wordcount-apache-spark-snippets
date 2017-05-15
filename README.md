@@ -53,9 +53,7 @@ This example is similar to the first example. The two only differ in the usage o
 
 This example is totally different from the first two examples. Here we use DataFrames instead of RDD to work with the text as indicated with the “toDF” command. The returned DataFrame is made of a sequence of Rows. Because of the split operation, each row is made of one element that can be accessed by the index=0. Also, similiar to 2nd example we are using the gourpBy operation which is followed by count to perform the word count. The count command gives DataFrames their edge over RDDs.
 
-If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple: when you define a Dataset with one column the Spark Framework assigns the column a name called "Value" by default if it was not defined by the programmer. 
-
-The filter and groupBy operation above can also be written as below. Here the first element in the array within the row is accessed via “r.get(0)”.
+If you are wondering how can we use the column name "Value" in the groupBy operation, the reason is simple: when you define a Dataset with one column the Spark Framework assigns the column a name called "Value" by default if it was not defined by the programmer. The filter and groupBy operation above can also be written in another way. Here the first element in the array within the row is accessed via “r.get(0)”.
 
       val wcounts3 = wordsDF.filter(r => (r.get(0) =="Humpty") || (r.get(0) == "Dumpty")).groupBy("Value").count()
 
@@ -71,7 +69,7 @@ The filter and groupBy operation above can also be written as below. Here the fi
                               .count()
      wcounts4.show()
 
-Here we use Datasets instead of DataFrames to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive. It blends well with the Scala paradigm.
+We use in this example Datasets instead of DataFrames to read the text file then we apply a filter and groupBy operation followed by count. The code here is easy to read and very intuitive; it blends well with the Scala paradigm.
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
     import spark.implicits._  
@@ -82,7 +80,7 @@ Here we use Datasets instead of DataFrames to read the text file then we apply a
     val wcounts5 = spark.sql("SELECT Value, COUNT(Value) FROM WORDS WHERE Value ='Humpty' OR Value ='Dumpty' GROUP BY Value")
     wcounts5.show
 
-Here we create a Temporary View called WORDS that we query using a standard Spark Select SQL statement.
+Here we create a Temporary View called WORDS that we query using a standard Spark SQL Select statement.
   
 ## Example 6: Word Count Using Case Class, Dataset and where command
     case class CWord (Value: String)
@@ -103,18 +101,16 @@ In this example we utilize the power of Datasets by providing the schema as a ca
     
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
     val CWordsDS = readFileDS.as[CWord]
-    val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty"))
+    val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty") )
                            .groupBy($"Value")
                            .agg(count($"Value"))
     wcounts7.collect.foreach(println)
 
-This example is similar to the previous one, however instead of a string predicate in the “where” clause we use $ symbol to indicate a column name. We also use the agg command which is the generalized operation for all aggregate functions in Spark.
+This example is similar to the previous one, however instead of a string predicate in the “where” clause we use $ symbol to indicate a column name. We also use the agg command which is the generalized operation for all aggregate functions in Spark. The above can also be written by replacing the $"Value" with CWordsDS("Value") as follows:
 
-The above can also be written by replacing the $"Value" with CWordsDS("Value") as follows:
-
-    val wcounts7 = CWordsDS.where((CWordsDS($"Value") === "Humpty") || ((CWordsDS($"Value") === "Dumpty"))
+    val wcounts7 = CWordsDS.where( (CWordsDS($"Value") === "Humpty") || ((CWordsDS($"Value") === "Dumpty") )
                            .groupBy((CWordsDS($"Value"))
                            .agg(count((CWordsDS($"Value"))
 
 ### Concluding Remarks
-Overall, to use RDDs, DataFrames and Datasets to manipulate data sometimes is not straight forward. However, this flexibility gives you as a programmer various options to code complicated algorithms that otherwise cannot be performed using SQL statements defined in a double quoted string.   
+Overall, to use RDDs, DataFrames and Datasets to manipulate data sometimes is not straight forward. However, this flexibility gives you as a programmer various options to code complicated algorithms that otherwise cannot be performed using SQL statements defined in a double quoted strings.   
