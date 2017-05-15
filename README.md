@@ -80,7 +80,7 @@ Here we use Datasets instead of Dataframes to read the text file then we apply a
     val wcounts5 = spark.sql("SELECT Value, COUNT(Value) FROM WORDS WHERE Value ='Humpty' OR Value ='Dumpty' GROUP BY Value")
     wcounts5.show
 
-Here we create a Temporary View that we query using a Spark Select SQL statement.
+Here we create a Temporary View called WORDS that we query using a standard Spark Select SQL statement.
   
 ## Example 6: Word Count Using Case Class, Dataset and where command
     case class CWord (Value: String)
@@ -93,9 +93,9 @@ Here we create a Temporary View that we query using a Spark Select SQL statement
                            .count()
     wcounts6.collect.foreach(println)
    
-In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of using a filter on all the elements of the Dataset we use the “where” command and pass a predicate condition using the column name “Value”.
+In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of using a filter on all the elements of the Dataset we use the “where” operation and pass the predicate clause as a string that uses the column name "Value" to set the condition.
 
-## Example 7: Word Count Using Case Class, Dataset, where and agg commands and $column-name
+## Example 7: Word Count Using Case Class, Dataset, agg operation and $column-name
     case class CWord (Value: String)
     import spark.implicits._  
     
@@ -106,4 +106,10 @@ In this example we utilize the power of Datasets by providing the schema as a ca
                            .agg(count($"Value"))
     wcounts7.collect.foreach(println)
 
-In this example we utilize the power of Datasets by providing the schema as a case class. Then instead of a filter we use the “where” command and pass a predicate indicating using the column name via a $ variable. We also use the agg command which is the generalized command for all aggregate functions.
+This example is similar to the previous one, however instead of a string predicate in the “where” clause we use $ symbol to indicate a column name. We also use the agg command which is the generalized operation for all aggregate functions in Spark.
+
+The above can also be written by replacing the $"Value" with CWordsDS("Value") as follows:
+
+      val wcounts3 = val wcounts7 = CWordsDS.where((CWordsDS($"Value") === "Humpty") || ((CWordsDS($"Value") === "Dumpty"))
+                           .groupBy((CWordsDS($"Value"))
+                           .agg(count((CWordsDS($"Value"))
