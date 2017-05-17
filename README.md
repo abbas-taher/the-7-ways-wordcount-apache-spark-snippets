@@ -77,7 +77,8 @@ We use in this example Datasets instead of DataFrames to read the text file then
 
 ## Example 5: Word Count Using Spark SQL on Dataset & TempView
      import spark.implicits._  
-
+     
+     val dfsFilename = "/input/humpty.txt"
      val readFileDS = spark.sqlContext.read.textFile(dfsFilename)
      val wordsDS = readFileDS.flatMap(_.split(" ")).as[String]
      wordsDS.createOrReplaceTempView("WORDS")    
@@ -89,7 +90,8 @@ Here we create a Temporary View called WORDS that we query using a standard Spar
 ## Example 6: Word Count Using Case Class, Dataset and Value Attribute
      case class CWord (Value: String)
      import spark.implicits._  
-    
+     
+     val dfsFilename = "/input/humpty.txt"
      val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
      val CWordsDS = readFileDS.as[CWord]
      val wcounts6 = CWordsDS.filter (w => (w.Value == "Humpty") || (w.Value == "Dumpty"))
@@ -109,6 +111,7 @@ In case you wish to use the “where” operator with an SQL style predicate you
     case class CWord (Value: String)
     import spark.implicits._  
     
+    val dfsFilename = "/input/humpty.txt"
     val readFileDS = spark.sqlContext.read.textFile(dfsFilename).flatMap(_.split(" "))
     val CWordsDS = readFileDS.as[CWord]
     val wcounts7 = CWordsDS.where( ($"Value" === "Humpty") || ($"Value" === "Dumpty") )
